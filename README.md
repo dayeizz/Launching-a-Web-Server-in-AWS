@@ -1,6 +1,8 @@
 ## Launching a Web Server in AWS
 This guide provides step-by-step instructions for deploying a web server on Amazon Web Services (AWS). It covers selecting an EC2 instance, configuring security groups, installing web server software, and verifying that the application is accessible over the internet.
 
+---
+
 ### 1. Start EC2 & Configure Security Group
 
 1. Go to **EC2 → Instances → Locate your instance → Start Instance**
@@ -14,12 +16,29 @@ This guide provides step-by-step instructions for deploying a web server on Amaz
    * Source: **0.0.0.0**
    * Description: *http*
   
-  * Add rule → Type: **HTTPS**
+   * Add rule → Type: **HTTPS**
    * Source: **0.0.0.0**
    * Description: *https*
 
 ---
-### 2. Configure Subdomains (Route 53)
+
+### 2. Connect Domain to AWS and Check DNS
+
+1. Open **Route 53 → Hosted Zones**
+2. Click your domain
+3.  Copy the **4 name servers** shown in the NS record
+  (they look like: `ns-123.awsdns-45.com`)
+4. Log in **Squarespace** → **Settings → Domains**
+5. Select your domain
+6. Open **Nameservers**
+7. Choose **Use custom nameservers**
+8. Delete the old nameservers
+9. Paste the **4 AWS name servers**
+10. Save
+  
+---
+
+### 3. Configure Subdomains (Route 53)
 
 1. Go to **Route 53 → Hosted Zones → example.com**
 2. Create **A records** for:
@@ -28,10 +47,15 @@ This guide provides step-by-step instructions for deploying a web server on Amaz
    * `www.example.com`
    * `subdomain.example.com`
 3. Point all to your server’s **public IP (EC2 → Instances → Locate your instance)**.
+4. Go to: **[https://toolbox.googleapps.com/apps/dig/](https://toolbox.googleapps.com/apps/dig/)**
+5. Type: **example.com**
+6. Select: **A**
+7. Click **Dig**
+  You should see your EC2 public IP.
 
 ---
 
-### 3. Connect via SSH
+### 4. Connect via SSH
 
 ```bash
 ssh -i privatekey.pem ubuntu@<public_ipv4>
@@ -39,7 +63,7 @@ ssh -i privatekey.pem ubuntu@<public_ipv4>
 
 ---
 
-### 4. Configure Apache
+### 5. Configure Apache
 
 Edit Apache config:
 
@@ -96,13 +120,13 @@ sudo apache2ctl configtest
 
 ---
 
-### 5. Install Certbot & Configure HTTPS
+### 6. Install Certbot & Configure HTTPS
 
 ```bash
 sudo add-apt-repository ppa:certbot/certbot -y
 sudo apt update
 sudo apt install python3-certbot-apache -y
-sudo certbot --apache -d example.com -d www.example.com -d subdomain.example.com
+sudo certbot --apache -d example.com
 ```
 
 Choose **Redirect** when prompted.
@@ -110,7 +134,7 @@ Certbot auto-renews every 90 days.
 
 ---
 
-### 6. Secure Files with `.htaccess`
+### 7. Secure Files with `.htaccess`
 
 Create `/var/www/html/.htaccess`:
 
@@ -140,7 +164,7 @@ Options -Indexes
 
 ---
 
-### 7. File Transfer via SCP
+### 8. File Transfer via SCP
 
 ```bash
 scp -i privatekey.pem -r /local/folder ubuntu@<server_ip>:/var/www/html/
@@ -148,7 +172,7 @@ scp -i privatekey.pem -r /local/folder ubuntu@<server_ip>:/var/www/html/
 
 ---
 
-### 8. Troubleshooting
+### 9. Troubleshooting
 
 * **CSS not reloading:**
   Run `sudo chmod -R 755 /var/www/html` and hard-refresh (Ctrl + F5) on the browser.
