@@ -174,6 +174,10 @@ scp -i privatekey.pem -r /local/folder ubuntu@<server_ip>:/var/www/html/
 
 ### 9. Troubleshooting
 
+* **Unable to access SSH:**
+Check your public IP (you can use a site like ipchicken.com).
+Then go to Security Groups → Select your security group → Edit inbound rules, and make sure the rule for your name includes your current IP address.
+
 * **CSS not reloading:**
   Run `sudo chmod -R 755 /var/www/html` and hard-refresh (Ctrl + F5) on the browser.
 * **Wrong redirect:**
