@@ -22,7 +22,7 @@ This guide provides step-by-step instructions for deploying a web server on Amaz
 
 ---
 
-### 2. Connect Domain to AWS and Check DNS
+### 2. Connect Domain to AWS
 
 1. Open **Route 53 → Hosted Zones**
 2. Click your domain
